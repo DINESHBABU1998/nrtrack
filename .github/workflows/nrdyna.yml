@@ -1,0 +1,30 @@
+name: Change Tracking Marker
+  
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  newrelic:
+    runs-on: ubuntu-latest
+    name: New Relic
+    steps:
+      - name: run curl
+        id: testcases
+        run: |
+
+            version=$((${{github.event.inputs.Revisionversion}}+1))
+            echo "newversion=$((version))"
+            echo "CURLVERSION=$((version))" >> $GITHUB_OUTPUT
+            
+            curl -X 'POST' \
+              'https://api.newrelic.com/graphql' \
+              -H 'Content-Type: application/json' \
+              -H 'API-Key: NRAK-NUECYGH8SLZXTS239MDWSUFQZZP' \
+              --data-binary '{"query":"mutation { changeTrackingCreateDeployment(deployment: {version:"'"$version"'" , user: \"t.dineshbabu@cloudeq.com\", groupId: \"78641\", entityGuid: \"MzY3OTk4NXxBUE18QVBQTElDQVRJT058MTMwMjU5NzI5NQ\", description: \"create a new marker\", deploymentType: ROLLING, deepLink: \"https://github.com/DINESHBABU1998/nrtrack\", commit: \"checked\", changelog: \"\"}) {changelog\n commit\n    deepLink\n    deploymentId\n    deploymentType\n    description\n    entityGuid\n    groupId\n    timestamp\n    user\n    version}}}'

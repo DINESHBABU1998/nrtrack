@@ -1,0 +1,25 @@
+- name: run curl
+        id: testcases
+        run: |
+
+            version=$((${{github.event.inputs.Revisionversion}}+1))
+            echo "newversion=$((version))"
+            echo "CURLVERSION=$((version))" >> $GITHUB_OUTPUT
+            curl -X 'POST' \
+              'https://api.newrelic.com/v2/applications/550478959/deployments.json' \
+              -H 'accept: application/json' \
+              -H 'X-Api-Key: NRAK-0EWSWVM2VZG1ZGGVIMHIPZOWIHQ' \
+              -H 'Content-Type: application/json' \
+              -d \
+            '{
+              "deployment": {
+                "changelog": "",
+                "description": "testlog: organisation change success",
+                "revision": "'"$version"'",
+                "user": "t.dineshbabu@cloudeq.com"
+              }'
+            curl -X 'POST' \
+              'https://api.newrelic.com/graphql' \
+              -H 'Content-Type: application/json' \
+              -H 'API-Key: ' \
+              --data-binary '{"query":"mutation { changeTrackingCreateDeployment(deployment: {version:"'"$version"'" , user: \"t.dineshbabu@cloudeq.com\", groupId: \"78641\", entityGuid: \"MzY3OTk4NXxBUE18QVBQTElDQVRJT058MTMwMjU5NzI5NQ\", description: \"create a new marker\", deploymentType: ROLLING, deepLink: \"https://github.com/DINESHBABU1998/nrtrack\", commit: \"checked\", changelog: \"\"}) {changelog commit    deepLink\n    deploymentId\n    deploymentType\n    description\n    entityGuid\n    groupId\n    timestamp\n    user\n    version}}}'
